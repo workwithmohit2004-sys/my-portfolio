@@ -1,7 +1,12 @@
 import { Resend } from 'resend';
 import dotenv from 'dotenv';
 
-dotenv.config();
+// Load environment variables if running in Node environment
+try {
+  dotenv.config();
+} catch (e) {
+  // Dotenv might already be loaded or in serverless environment
+}
 
 // In-memory rate limiting map: ip -> [timestamps]
 const rateLimitMap = new Map();
@@ -36,13 +41,26 @@ export const checkRateLimit = (ip) => {
 };
 
 // Core email processing function
-export async function processSendEmail(payload, clientIp = '127.0.0.1') {
-  const { name, email, subject, message, botField } = payload || {};
+export async function processSendEmail(rawPayload, clientIp = '127.0.0.1') {
+  // Parse payload if passed as string or object
+  let payload = rawPayload;
+  if (typeof rawPayload === 'string') {
+    try {
+      payload = JSON.parse(rawPayload);
+    } catch (e) {
+      payload = {};
+    }
+  }
+  if (!payload || typeof payload !== 'object') {
+    payload = {};
+  }
+
+  const { name, email, subject, message, botField } = payload;
 
   // 1. Honeypot check for spam bots
   if (botField && String(botField).trim() !== '') {
-    // Silently succeed for bots
-    return { success: true, message: "Message sent successfully!" };
+    // Silently succeed for bots without sending
+    return { status: 200, success: true, message: "Message sent successfully!" };
   }
 
   // 2. Rate limiting check
@@ -77,19 +95,41 @@ export async function processSendEmail(payload, clientIp = '127.0.0.1') {
     return { status: 400, success: false, error: "Please enter a message (minimum 10 characters)." };
   }
 
-  // 4. API Key Verification
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey || apiKey === 're_your_api_key_here') {
+  // 4. API Key Verification - Check all common environment variable names & trim quotes
+  const rawApiKey = 
+    process.env.RESEND_API_KEY || 
+    process.env.VITE_RESEND_API_KEY || 
+    process.env.RESEND_KEY ||
+    process.env.REACT_APP_RESEND_API_KEY;
+
+  const apiKey = typeof rawApiKey === 'string'
+    ? rawApiKey.trim().replace(/^["']|["']$/g, '')
+    : '';
+
+  if (!apiKey || apiKey === 're_your_api_key_here' || apiKey.length < 5) {
     return {
       status: 500,
       success: false,
-      error: "RESEND_API_KEY is not set in environment variables. Please configure your Resend API key in .env."
+      error: "RESEND_API_KEY is not set in environment variables. If running locally, add your key to .env. If deploying on Vercel, ensure RESEND_API_KEY is added under Project Settings > Environment Variables, and trigger a REDEPLOY."
     };
   }
 
-  // 5. Build Resend Email Payload
-  const contactEmail = process.env.CONTACT_EMAIL || 'mohitsharma701708@gmail.com';
-  const fromEmail = process.env.FROM_EMAIL || 'Portfolio Contact <onboarding@resend.dev>';
+  // 5. Contact Email & From Email
+  const rawContactEmail = 
+    process.env.CONTACT_EMAIL || 
+    process.env.VITE_CONTACT_EMAIL || 
+    'mohitsharma701708@gmail.com';
+  const contactEmail = typeof rawContactEmail === 'string'
+    ? rawContactEmail.trim().replace(/^["']|["']$/g, '')
+    : 'mohitsharma701708@gmail.com';
+
+  const rawFromEmail = 
+    process.env.FROM_EMAIL || 
+    process.env.VITE_FROM_EMAIL || 
+    'Portfolio Contact <onboarding@resend.dev>';
+  const fromEmail = typeof rawFromEmail === 'string'
+    ? rawFromEmail.trim().replace(/^["']|["']$/g, '')
+    : 'Portfolio Contact <onboarding@resend.dev>';
 
   const resend = new Resend(apiKey);
 
@@ -141,7 +181,7 @@ export async function processSendEmail(payload, clientIp = '127.0.0.1') {
 
         <div class="footer">
           <p>Sent from Mohit Sharma's Developer Portfolio</p>
-          <p>💡 Tip: Simply click "Reply" in your email client to reply directly to ${cleanName} (${cleanEmail}).</p>
+          <p>💡 Tip: Click "Reply" in your email client to reply directly to ${cleanName} (${cleanEmail}).</p>
         </div>
       </div>
     </body>
@@ -182,4 +222,3 @@ export async function processSendEmail(payload, clientIp = '127.0.0.1') {
     };
   }
 }
-
