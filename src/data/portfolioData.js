@@ -12,7 +12,7 @@ export const portfolioData = {
       "My goal is to create meaningful digital experiences and contribute to real-world projects."
     ],
     phone: "+91-9068582691",
-    email: "Mohitsharma701708@gmail.com",
+    email: "mohitsharma701708@gmail.com",
     location: "Meerut, Uttar Pradesh, India",
     // Replace these placeholders with your active profile URLs
     github: "https://github.com/mohitsharma-dev", 

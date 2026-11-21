@@ -9,11 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "canvas-confetti": "^1.9.4",
+    "dotenv": "^18.0.10",
     "framer-motion": "^11.18.2",
     "lucide-react": "^0.475.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "canvas-confetti": "^1.9.4"
+    "resend": "^6.39.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.18",
@@ -25,4 +27,3 @@
     "vite": "^5.4.14"
   }
 }
-

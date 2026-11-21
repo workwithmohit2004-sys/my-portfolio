@@ -5,14 +5,13 @@ import {
   Mail, 
   Github, 
   Linkedin, 
-  Code, 
   Sparkles, 
   Layers, 
   Terminal,
-  ExternalLink,
-  CheckCircle2
+  ExternalLink
 } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
+import profileImg from '../profile.jpg';
 
 // Technology icons for floating badges
 const techBadges = [
@@ -231,40 +230,17 @@ export const Hero = () => {
             {/* Circular Profile Container */}
             <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full p-1 bg-gradient-to-tr from-indigo-500 via-slate-800 to-cyan-400 shadow-2xl">
               
-              {/* Replaceable Profile Image Placeholder */}
-              <div className="w-full h-full rounded-full bg-[#0d1322] border-2 border-[#1e293b] flex flex-col items-center justify-center p-6 text-center relative overflow-hidden group">
+              {/* Profile Image Frame with Subtle Hover Effect */}
+              <div className="w-full h-full rounded-full bg-[#0d1322] border-2 border-[#1e293b] relative overflow-hidden group shadow-inner">
+                <img 
+                  src={profileImg} 
+                  alt="Mohit Sharma - Frontend Web Developer" 
+                  className="w-full h-full object-cover object-center rounded-full transition-transform duration-500 ease-out group-hover:scale-105"
+                  loading="eager"
+                />
                 
-                {/* Tech Code Overlay Pattern */}
-                <div className="absolute inset-0 opacity-10 bg-grid-pattern"></div>
-                
-                {/* Developer Avatar Placeholder Illustration */}
-                <div className="relative z-10 w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-b from-indigo-500/20 to-cyan-500/20 border border-indigo-400/30 flex items-center justify-center mb-3 shadow-inner">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#101827] flex items-center justify-center border border-white/10">
-                    <span className="text-2xl sm:text-3xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-cyan-300 font-mono">
-                      MS
-                    </span>
-                  </div>
-                </div>
-
-                <div className="relative z-10">
-                  <p className="text-white font-bold text-base sm:text-lg tracking-wide">
-                    Mohit Sharma
-                  </p>
-                  <p className="text-xs text-cyan-300 font-mono mt-0.5">
-                    React.js Developer
-                  </p>
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono">
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>Open to Work</span>
-                  </div>
-                </div>
-
-                {/* Developer hint overlay on hover (easy to replace photo) */}
-                <div className="absolute inset-0 bg-[#080B14]/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-4 text-center z-20">
-                  <Code className="w-8 h-8 text-indigo-400 mb-2" />
-                  <p className="text-xs text-white font-medium">Replaceable Avatar Slot</p>
-                  <p className="text-[10px] text-text-muted mt-1">Place your photo in <code className="text-cyan-300">/public/profile.jpg</code> anytime</p>
-                </div>
+                {/* Subtle sheen / vignette overlay to blend with dark aesthetic */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-t from-[#080B14]/30 via-transparent to-transparent opacity-60 pointer-events-none group-hover:opacity-30 transition-opacity duration-300"></div>
               </div>
 
             </div>
